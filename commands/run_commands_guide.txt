@@ -1,0 +1,46 @@
+E-Commerce Backend — Run Commands Guide
+
+1) Run with Docker
+-----------------
+Start all services (backend, db, redis, frontend, prometheus, grafana):
+  docker compose up --build -d
+
+Seed demo accounts + sample data (reliable in Docker):
+  docker compose exec app python -c "import runpy,sys; sys.path.insert(0,'/app'); runpy.run_path('/app/scripts/seed.py', run_name='__main__')"
+
+
+Useful URLs (after containers are healthy):
+  API Swagger:           http://localhost:8000/docs
+  API Health:            http://localhost:8000/health
+  Monitoring Health:    http://localhost:8000/monitoring/health
+  Frontend UI:          http://localhost:8081
+  Prometheus UI:        http://localhost:9090
+  Grafana UI:           http://localhost:3000 (admin / admin)
+
+2) Run Tests
+-------------
+Run locally:
+  pytest -q
+
+Run tests inside container (note: tests folder is not copied into the container in this compose file):
+  docker compose exec app pytest -q
+  
+If you want container-based tests, run locally instead (pytest -q), or mount/copy the ./tests folder into the container.
+
+
+3) Local (non-Docker) Development
+----------------------------------
+Create venv:
+  python -m venv venv
+  venv\Scripts\activate
+
+Install dependencies:
+  pip install -r requirements.txt
+
+Run server:
+  uvicorn app.main:app --reload
+
+Note:
+- Without Docker, ensure DB/Redis/secret settings are configured (e.g., via .env).
+
+curl -s http://127.0.0.1:8000/openapi.json | findstr "users/me"

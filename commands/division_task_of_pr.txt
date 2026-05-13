@@ -1,0 +1,88 @@
+Member 1 — Auth + Users
+Own these files/parts
+
+app/routes/auth.py (register/login)
+app/routes/users.py (GET /users/me)
+app/services/auth_service.py
+app/core/security.py + app/core/dependencies.py (JWT + “current user/admin/doctor” deps)
+What to test/discuss
+
+Register/login success + failure status codes
+Token validity/expiration
+Role enforcement for protected endpoints (admin / doctor / patient behavior)
+
+
+
+Member 2 — Patients
+Own these files/parts
+
+app/routes/patients.py (patient CRUD endpoints)
+app/services/patient_service.py
+app/models/ patient-related model usage
+app/schemas/patient* (validation rules)
+What to test/discuss
+
+Admin-only access to create/update/delete patients (if enforced)
+Patient ownership rules (what patients can/can’t read)
+Validation errors: missing/invalid fields, duplicates (if any)
+
+
+Member 3 — Doctors
+Own these files/parts
+
+app/routes/doctors.py
+app/services/doctor_service.py
+Doctor-related schemas/models
+What to test/discuss
+
+Admin-only doctor management
+Pagination behavior (skip/limit)
+Update/delete permissions and expected status codes
+
+
+Member 4 — Appointments (core business logic)
+Own these files/parts
+
+app/routes/appointments.py
+app/services/appointment_service.py
+appointment-related schemas/models
+Business rules in services:
+create appointment (patient profile requirement)
+doctor appointments list vs user appointments list
+status update (/{appointment_id}/status)
+cancel (/{appointment_id}/cancel)
+What to test/discuss
+
+Appointment creation rules (patient profile required)
+Double booking rejection (if implemented)
+Cancel rules (who can cancel, what statuses allow it)
+Correct authorization: owner/patient vs doctor vs admin behavior
+
+
+Member 5 — Monitoring + Redis + Observability + Tests
+Own these files/parts
+
+app/routes/monitoring.py
+app/core/redis_client.py and any Redis usage in code
+Logging/middleware parts (where metrics/logs are created)
+Tests:
+tests/test_auth.py
+tests/test_patients.py
+tests/test_doctors.py
+tests/test_appointments.py
+tests/test_monitoring.py
+Docker/seed/test docs:
+docker-compose.yml, Dockerfile
+scripts/, README.md
+What to test/discuss
+
+/monitoring/health returns correct degraded/healthy states
+/monitoring/recent-errors reads correct logs/error_*.log
+/metrics is reachable (Prometheus wiring)
+Run tests locally + in container and ensure green results
+Mapping of endpoints → member (quick checklist)
+/auth/*, /users/me → Member 1
+/patients/* → Member 2
+/doctors/* → Member 3
+/appointments/* → Member 4
+/monitoring/*, Redis/metrics/testing → Member 5

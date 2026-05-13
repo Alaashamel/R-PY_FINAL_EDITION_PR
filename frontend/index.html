@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Appointment System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-hospital"></i>
+                    <h1>Hospital System</h1>
+                </div>
+                <nav class="main-nav">
+                    <a href="#" onclick="showDoctors()" class="nav-link"><i class="fas fa-user-md"></i> Doctors</a>
+                    <a href="#" onclick="showAppointments()" class="nav-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+                </nav>
+                <div id="auth-section" class="auth-section">
+                    <button id="logoutBtn" style="display:none;" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="login-form" class="form-container">
+            <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+            <div class="form-group">
+                <input type="text" id="login-username" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input type="password" id="login-password" placeholder="Password">
+            </div>
+            <button onclick="login()" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <div class="form-links">
+                <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
+            </div>
+        </div>
+
+        <div id="register-form" class="form-container" style="display:none;">
+            <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+            <div class="form-group">
+                <input type="text" id="reg-username" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <input type="email" id="reg-email" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="reg-password" placeholder="Password">
+            </div>
+            <button onclick="register()" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+            <div class="form-links">
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+            </div>
+        </div>
+
+        <div id="app-content" style="display:none;">
+            <div class="app-layout">
+                <div class="sidebar">
+                    <h3><i class="fas fa-bars"></i> Menu</h3>
+                    <button onclick="showDoctors()" class="menu-btn">
+                        <i class="fas fa-user-md"></i> Doctors
+                    </button>
+                    <button onclick="showAppointments()" class="menu-btn">
+                        <i class="fas fa-calendar-check"></i> My Appointments
+                    </button>
+                    <div id="doctor-menu" class="admin-menu" style="display:none;">
+                        <h4>Doctor Panel</h4>
+                        <button onclick="showDoctorSchedule()" class="menu-btn">
+                            <i class="fas fa-clock"></i> My Schedule
+                        </button>
+                    </div>
+                    <div id="admin-menu" class="admin-menu" style="display:none;">
+                        <h4>Admin Panel</h4>
+                        <button onclick="showAddDoctor()" class="menu-btn">
+                            <i class="fas fa-plus"></i> Add Doctor
+                        </button>
+                        <button onclick="showAddPatient()" class="menu-btn">
+                            <i class="fas fa-plus"></i> Add Patient
+                        </button>
+                        <button onclick="showAllAppointments()" class="menu-btn">
+                            <i class="fas fa-list"></i> All Appointments
+                        </button>
+                    </div>
+                </div>
+                <div class="content" id="content-area">
+                    <div id="doctors-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

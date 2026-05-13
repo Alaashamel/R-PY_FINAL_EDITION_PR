@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Monitoring</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Monitoring Dashboard</h1>
+    <nav>
+      <a href="index.html">Hospital</a>
+      <a href="http://localhost:3000" target="_blank">Grafana</a>
+      <a href="http://localhost:9090" target="_blank">Prometheus</a>
+      <a href="http://localhost:8000/metrics" target="_blank">Metrics</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h2>System Health</h2>
+      <pre id="health">Loading...</pre>
+    </section>
+
+    <section class="panel">
+      <h2>Recent Error Logs</h2>
+      <p>This section requires an admin JWT saved by logging in from the hospital page.</p>
+      <pre id="errors">Loading...</pre>
+    </section>
+  </main>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    async function loadDashboard() {
+      try {
+        const health = await fetch('http://localhost:8000/monitoring/health');
+        document.getElementById('health').textContent = JSON.stringify(await health.json(), null, 2);
+      } catch (error) {
+        document.getElementById('health').textContent = error.message;
+      }
+
+      try {
+        const errors = await fetch('http://localhost:8000/monitoring/recent-errors', { headers });
+        const body = await errors.json();
+        document.getElementById('errors').textContent = JSON.stringify(body, null, 2);
+      } catch (error) {
+        document.getElementById('errors').textContent = error.message;
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

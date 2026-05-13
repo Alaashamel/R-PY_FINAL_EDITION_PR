@@ -1,0 +1,202 @@
+Common setup (do this once)
+1) Create venv + install deps
+
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.
+
+
+2) (Recommended) Run tests normally
+
+pytest -q
+
+
+3) Start Docker stack (for manual API verification)
+
+docker compose up --build -d
+
+
+4) Seed demo accounts + data (for manual testing)
+
+docker compose exec app python scripts/seed.py
+
+
+Docker endpoints to remember
+API: http://localhost:8000
+API docs: http://localhost:8000/docs
+Frontend: http://localhost:8081
+Grafana: http://localhost:3000 (admin/admin)
+Prometheus: http://localhost:9090
+Member 1 — Auth + Users (practice commands)
+
+A) Manual API checks (Docker)
+Login as admin
+
+
+curl -s -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"admin\",\"password\":\"adminpass123\"}"
+
+
+Login as customer
+
+
+curl -s -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"customer\",\"password\":\"customer123\"}"
+
+  
+Register (expected success)
+
+
+curl -s -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"u1\",\"email\":\"u1@example.com\",\"password\":\"pass1234\"}"
+Get profile (authenticated)
+
+Save token from login response into TOKEN:
+
+set TOKEN=PASTE_TOKEN_HERE
+Call:
+
+curl -s http://localhost:8000/users/me -H "Authorization: Bearer %TOKEN%"
+B) Run only auth-related tests (pytest)
+Run:
+
+
+pytest -q -k "auth or login or register or users"
+If you want stricter focus:
+
+
+pytest -q -k "auth"
+pytest -q -k "users"
+C) What to verify during practice
+invalid password → correct status (401/400/422 depending on implementation)
+missing/invalid token → correct status
+/users/me returns correct user + role/permissions info
+Member 2 — Products + Categories (practice commands)
+A) Manual API checks (Docker)
+Login token as admin (reuse login command from Member 1)
+
+Create category (admin-only)
+
+
+curl -s -X POST http://localhost:8000/categories/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer %TOKEN%" \
+  -d "{\"name\":\"Phones\"}"
+Create product (admin-only)
+
+
+curl -s -X POST http://localhost:8000/products/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer %TOKEN%" \
+  -d "{\"name\":\"iPhone 15\",\"description\":\"test\",\"price\":999,\"category_id\":1,\"stock\":10}"
+Read products (customer/admin both allowed)
+Login as customer → set token TOKEN_CUST, then:
+
+
+curl -s http://localhost:8000/products/?skip=0&limit=10 \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+Test cache-aside quickly (read twice)
+Run the same GET twice and compare latency manually in browser/terminal.
+
+
+curl -s http://localhost:8000/products/1 \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+curl -s http://localhost:8000/products/1 \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+B) Cache benchmark script (very important for PR discussion)
+
+docker compose exec app python scripts/cache_benchmark.py --username customer --password customer123 --path /products/
+C) Run only products/categories tests
+
+pytest -q -k "products or categories or cache"
+D) What to verify during practice
+category uniqueness rule
+deleting a category with products is blocked
+product stock cannot go negative (especially updates)
+cache invalidation after create/update/delete
+Member 3 — Cart + Orders (practice commands)
+A) Manual API checks (Docker)
+Login as customer
+Set TOKEN_CUST.
+
+Add to cart
+
+
+curl -s -X POST http://localhost:8000/cart/add/1?quantity=2 \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+View cart
+
+
+curl -s http://localhost:8000/cart/ -H "Authorization: Bearer %TOKEN_CUST%"
+Update cart quantity
+
+
+curl -s -X PUT http://localhost:8000/cart/update/1?quantity=3 \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+Place order
+
+
+curl -s -X POST http://localhost:8000/orders/ \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+Cancel pending order
+
+Get your orders:
+
+curl -s http://localhost:8000/orders/ -H "Authorization: Bearer %TOKEN_CUST%"
+Then cancel (replace {order_id}):
+
+curl -s -X POST http://localhost:8000/orders/{order_id}/cancel \
+  -H "Authorization: Bearer %TOKEN_CUST%"
+B) Run only cart/orders tests
+
+pytest -q -k "cart or orders"
+C) What to verify during practice
+order fails if stock insufficient
+stock decreases when creating order
+cancel restores stock (only for pending orders)
+customer can’t access others’ orders
+Member 4 — Redis + Logging + Monitoring (practice commands)
+A) Redis/cache verification
+Start Docker (if not already):
+
+docker compose up --build -d
+Run benchmark (same as Member 2, but you own verification/discussion):
+
+docker compose exec app python scripts/cache_benchmark.py --username customer --password customer123 --path /products/
+B) Monitoring endpoints (Docker)
+Metrics
+
+
+curl -s http://localhost:8000/metrics | findstr http_requests_total
+Monitoring health
+
+
+curl -s http://localhost:8000/monitoring/health
+Recent errors (admin)
+Login admin and:
+
+
+curl -s http://localhost:8000/monitoring/recent-errors \
+  -H "Authorization: Bearer %TOKEN%"
+C) Logging check
+Trigger a few API calls (some success + one failure), then check logs folder:
+
+
+dir logs
+type logs\%FILE%
+(Use the newest api/error/structured log file.)
+
+D) Run pytest for monitoring/logging
+
+pytest -q -k "monitoring or metrics or logging"
+Member 5 — Tests + Docker + README (practice commands)
+A) Validate test suite locally
+
+pytest -q
+B) Docker-based verification
+
+docker compose up --build -d
+docker compose exec app pytest -q

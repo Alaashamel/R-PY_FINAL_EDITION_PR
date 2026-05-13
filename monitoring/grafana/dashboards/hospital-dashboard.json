@@ -1,0 +1,75 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []},
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto"},
+      "pluginVersion": "10.4.2",
+      "targets": [{"datasource": {"type": "prometheus", "uid": "Prometheus"}, "expr": "sum(rate(http_requests_total[5m]))", "refId": "A"}],
+      "title": "Requests / second",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
+      "id": 2,
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto"},
+      "pluginVersion": "10.4.2",
+      "targets": [{"datasource": {"type": "prometheus", "uid": "Prometheus"}, "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))", "refId": "A"}],
+      "title": "P95 latency",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
+      "id": 3,
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto"},
+      "pluginVersion": "10.4.2",
+      "targets": [{"datasource": {"type": "prometheus", "uid": "Prometheus"}, "expr": "sum(rate(http_requests_total{status_code=~\"5..\"}[5m]))", "refId": "A"}],
+      "title": "5xx errors / second",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "lineInterpolation": "linear", "barAlignment": 0, "lineWidth": 1, "fillOpacity": 10, "gradientMode": "none", "spanNulls": false, "insertNulls": false, "showPoints": "never", "pointSize": 5, "stacking": {"mode": "none", "group": "A"}, "axisPlacement": "auto", "axisLabel": "", "axisColorMode": "text", "scaleDistribution": {"type": "linear"}, "axisCenteredZero": false, "hideFrom": {"tooltip": false, "viz": false, "legend": false}, "thresholdsStyle": {"mode": "off"}}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+      "id": 4,
+      "options": {"tooltip": {"mode": "single", "sort": "none"}, "legend": {"showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": []}},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "Prometheus"}, "expr": "sum(rate(http_requests_total[5m])) by (path)", "legendFormat": "{{path}}", "refId": "A"}],
+      "title": "Traffic by path",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "lineInterpolation": "linear", "barAlignment": 0, "lineWidth": 1, "fillOpacity": 10, "gradientMode": "none", "spanNulls": false, "insertNulls": false, "showPoints": "never", "pointSize": 5, "stacking": {"mode": "none", "group": "A"}, "axisPlacement": "auto", "axisLabel": "", "axisColorMode": "text", "scaleDistribution": {"type": "linear"}, "axisCenteredZero": false, "hideFrom": {"tooltip": false, "viz": false, "legend": false}, "thresholdsStyle": {"mode": "off"}}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+      "id": 5,
+      "options": {"tooltip": {"mode": "single", "sort": "none"}, "legend": {"showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": []}},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "Prometheus"}, "expr": "sum(rate(http_requests_total[5m])) by (status_code)", "legendFormat": "{{status_code}}", "refId": "A"}],
+      "title": "Traffic by status code",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["fastapi", "ecommerce"],
+  "templating": {"list": []},
+  "time": {"from": "now-30m", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "E-Commerce API Monitoring",
+  "uid": "ecommerce-api-monitoring",
+  "version": 1,
+  "weekStart": ""
+}

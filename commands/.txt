@@ -1,0 +1,43 @@
+test database=>
+docker exec ecommerce-backend-db-1 psql -U postgres -d hospital -c "SELECT d.id, u.username, d.first_name, d.last_name, d.specialization FROM doctors d JOIN users u ON d.user_id = u.id;"
+
+
+caching test => 
+docker compose exec app sh -lc "python scripts/cache_benchmark.py --username admin --password adminpass123 --path /doctors/"
+
+
+api_testing=>
+pytest -q
+pytest -q -vv
+
+
+
+
+tips:
+If an endpoint returns 401,
+ you didn’t authorize (or the token format is wrong).
+  If it returns 403, 
+  the token is for the wrong role (admin vs patient/doctor).
+
+
+
+token =>
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV  ||
+
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2hhbW1lZF9lbHRvdWt5MyIsImV4cCI6MTc3ODY4MTcyM30.gYpbOftuZnY2A4yGJ8Wg7Uoq4FMdbQ2H7jWCBlARuAY
+
+
+
+api testing:
+
+1- regrister:
+POST http://localhost:8000/auth/register
+Body:
+email: mohammed3@example.com
+username: mohammed_eltouky3
+password: Abc12345
+first_name: moahmmed
+last_name: touky
+
+
+2- login:

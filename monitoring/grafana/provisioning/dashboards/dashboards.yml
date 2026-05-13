@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Hospital API
+    orgId: 1
+    folder: Course Project
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
