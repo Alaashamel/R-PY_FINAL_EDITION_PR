@@ -1,5 +1,8 @@
 # E-Commerce System Backend
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Language](https://img.shields.io/badge/language-Python-informational.svg) ![Last Commit](https://img.shields.io/github/last-commit/Alaashamel/R-PY_FINAL_EDITION_PR)
+
+
 A FastAPI backend for an online store with product/category management, shopping cart, order placement, inventory updates, JWT authentication, role-based authorization, Redis cache-aside caching, logging, monitoring, API tests, Docker, and a simple frontend.
 
 ## Project Scope
